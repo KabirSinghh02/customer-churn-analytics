@@ -1,0 +1,29 @@
+# 📊 Customer Churn Analytics & Retention Dashboard
+
+An interactive **Power BI** and **SQL** analytics solution designed to analyze customer attrition, identify high-risk churn segments, and evaluate revenue impacts for targeted retention strategies.
+
+---
+
+## 📌 Business Overview & Objective
+Acquiring new customers costs significantly more than retaining existing ones. Understanding why customers churn and identifying early indicators of churn allows business teams to take proactive retention measures.
+
+### Key Objectives:
+- Measure overall customer churn rate and track high-risk customer segments.
+- Analyze key churn drivers including contract types, tenure, payment methods, and monthly charges.
+- Provide actionable insights for marketing and customer success teams to reduce revenue leakage.
+
+---
+
+## 📊 Key Metrics & Insights
+- **Overall Churn Rate:** Identified key customer cohorts driving recurring churn.
+- **Contract Impact:** Month-to-month contract holders show significantly higher churn risk compared to long-term plans.
+- **Tenure Patterns:** First 12 months represent the highest risk window for customer drop-off.
+- **Payment Method Analysis:** Electronic check users exhibit higher churn tendencies compared to automated payment methods.
+
+---
+
+## 🛠️ Tech Stack & Tools Used
+- **Business Intelligence:** Power BI Desktop
+- **Database & Data Cleaning:** SQL / Excel
+- **Data Modeling:** DAX (Data Analysis Expressions)
+- **Visuals:** Executive KPI Cards, Decomposition Trees, Churn Breakdowns

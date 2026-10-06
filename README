@@ -1,29 +1,88 @@
-# 📊 Customer Churn Analytics & Retention Dashboard
+# 📉 Telecom Customer Churn & Retention Strategy Analytics
 
-An interactive **Power BI** and **SQL** analytics solution designed to analyze customer attrition, identify high-risk churn segments, and evaluate revenue impacts for targeted retention strategies.
+## 📌 Executive Project Summary
+An end-to-end customer churn analysis and retention engineering project focused on identifying customer attrition drivers, high-risk contract segments, service stickiness impact, and revenue leakage.
+
+This project combines SQL database transformations (Views, Tenure Bucketing, Stickiness Scoring) and an interactive Power BI Executive Dashboard featuring dynamic DAX insights and strategic action recommendations.
+
+## 🛠️ Data Pipeline & Architecture
+
+### 1. Data Cleaning & Feature Engineering (Excel / Power Query / SQL)
+* Cleaned customer demographic data, handled missing values, and isolated core behavioral variables.
+* Engineered custom analytical features inside MySQL using database Views (`v_Telecom_Churn_Final`):
+  * **Binary Conversion:** Converted text churn statuses into numeric flags (`1/0`) for optimized DAX calculations.
+  * **Tenure Grouping:** Categorized customer tenure into actionable cohorts (`0-1 Year`, `1-2 Years`, `2-4 Years`, `Over 4 Years`).
+  * **Service Stickiness Score:** Aggregated active subscribed services (Phone, Internet, Online Security, Tech Support) into a single composite numerical score.
+
+### 2. Database Engineering & SQL Analysis (MySQL)
+* Conducted deep-dive exploratory data analysis (EDA):
+  * **Payment Method Breakdown:** Computed churn rate percentages across payment methods to identify billing risk.
+  * **High-Value At-Risk Filtering:** Identified non-churned high Monthly Charge customers on Month-to-Month contracts for proactive retention.
+  * **Demographic Segmentation:** Evaluated churn impact across Senior Citizens and Online Security adoption.
 
 ---
 
-## 📌 Business Overview & Objective
-Acquiring new customers costs significantly more than retaining existing ones. Understanding why customers churn and identifying early indicators of churn allows business teams to take proactive retention measures.
+## 📊 Dashboard Architecture & Interactive Visuals
 
-### Key Objectives:
-- Measure overall customer churn rate and track high-risk customer segments.
-- Analyze key churn drivers including contract types, tenure, payment methods, and monthly charges.
-- Provide actionable insights for marketing and customer success teams to reduce revenue leakage.
+The Power BI Dashboard features a high-contrast dark theme optimized for executive retention strategy discussions:
+
+### 1️⃣ Core KPI Metrics
+* **Total Customers:** Tracks overall customer base (7,032).
+* **Churned Count & Revenue:** Real-time visibility into churned count and revenue impact (**$0.14M Churned Revenue**).
+* **Churn Rate Gauge:** Displays the overall churn benchmark (**26.54%**).
+
+### 2️⃣ Operational Risk Breakdown
+* **Internet Service Type:** Horizontal bar chart highlighting higher attrition in **Fiber Optic (41.89%)** vs. **DSL (19.00%)**.
+* **Contract Duration Impact:** Donut chart proving that **Month-to-Month contracts represent 88.55%** of total customer churn.
+* **Tenure vs. Contract Trend:** Line chart depicting churn rate trajectory across monthly tenure cohorts.
+
+### 3️⃣ Interactive Insights & Action Framework
+* **Dynamic DAX Insights:** Real-time updating textual cards reflecting active filtered churn contributions.
+* **Strategic Business Insights:** Formatted callout cards outlining concrete retention campaigns (e.g., offering 10% discounts for annual contract upgrades and performing technical audits on Fiber Optic latency).
 
 ---
 
-## 📊 Key Metrics & Insights
-- **Overall Churn Rate:** Identified key customer cohorts driving recurring churn.
-- **Contract Impact:** Month-to-month contract holders show significantly higher churn risk compared to long-term plans.
-- **Tenure Patterns:** First 12 months represent the highest risk window for customer drop-off.
-- **Payment Method Analysis:** Electronic check users exhibit higher churn tendencies compared to automated payment methods.
+## 🔑 Key Business Takeaways
+* **Contract Vulnerability:** Month-to-Month customers represent nearly 88% of all churn, making contract upgrades the primary retention lever.
+* **Service Quality Gap:** Fiber Optic subscribers show significantly higher churn rates (42%) compared to DSL, indicating potential service instability or pricing pressure.
+* **Early Attrition Window:** Nearly 50% of customer loss occurs within the first 6 months of onboarding (`0-1 Year` tenure group).
 
 ---
 
-## 🛠️ Tech Stack & Tools Used
-- **Business Intelligence:** Power BI Desktop
-- **Database & Data Cleaning:** SQL / Excel
-- **Data Modeling:** DAX (Data Analysis Expressions)
-- **Visuals:** Executive KPI Cards, Decomposition Trees, Churn Breakdowns
+## 💻 Tech Stack & Tools
+* **Database & Querying:** MySQL Workbench (Views, Aggregate Functions, Conditional CASE Statements, Subqueries)
+* **Data Transformation:** Microsoft Excel, Power Query
+* **Business Intelligence:** Power BI Desktop (DAX Expressions, Custom Gauge Visuals, Donut Charts, Strategic Text Cards)
+* **Version Control:** Git & GitHub
+
+---
+
+## 🗂️ SQL Query Samples
+
+```sql
+-- 1. Feature Engineering SQL View with Tenure Buckets & Stickiness Score
+CREATE OR REPLACE VIEW v_Telecom_Churn_Final AS
+SELECT 
+    *,
+    CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END AS Churn_Entry,
+    CASE 
+        WHEN tenure < 12 THEN '0-1 Year'
+        WHEN tenure <= 24 THEN '1-2 Years'
+        WHEN tenure <= 48 THEN '2-4 Years'
+        ELSE 'Over 4 Years'
+    END AS Tenure_Group,
+    (CASE WHEN PhoneService = 'Yes' THEN 1 ELSE 0 END +
+     CASE WHEN InternetService != 'No' THEN 1 ELSE 0 END +
+     CASE WHEN OnlineSecurity = 'Yes' THEN 1 ELSE 0 END +
+     CASE WHEN TechSupport = 'Yes' THEN 1 ELSE 0 END) AS Service_Score
+FROM churn_data;
+
+-- 2. Churn Rate Percentage by Payment Method
+SELECT 
+    PaymentMethod,
+    COUNT(*) AS Total_Customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS Churned_Count,
+    ROUND(AVG(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100, 2) AS Churn_Rate_Percentage
+FROM churn_data
+GROUP BY PaymentMethod
+ORDER BY Churn_Rate_Percentage DESC;
